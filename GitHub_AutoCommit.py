@@ -18,7 +18,8 @@ def getData(token):
    response = requests.get(url , headers=headers)
 
    if response.status_code == 200:
-      print(response.json())
+      data = response.json()
+      print(data)
    else:
       print(f"Could not get data" , response.status_code)
    
