@@ -84,8 +84,6 @@ class GitAutoCommit(FileSystemEventHandler):
             pass
 
 
-
-
 def main(): 
    # Setting up an observer
    observer = Observer()
@@ -103,7 +101,7 @@ def main():
       while True:
          pass
    except KeyboardInterrupt:
-      print(eventHandler.modifications)
+      eventHandler.commit_and_push()
       observer.stop()
 
    # Shuts down observer
