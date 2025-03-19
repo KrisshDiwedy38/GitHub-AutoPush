@@ -10,6 +10,9 @@ from GitHub_PushToken import PushingToken
 class GitAutoCommit(FileSystemEventHandler):
    def __init__(self):
       self.modifications = {}
+      self.owner = "KrisshDiwedy38"
+      self.branch = "main"
+      self.token = PushingToken
    
    # Checks to see if files were modified
    def on_modified(self, event):
