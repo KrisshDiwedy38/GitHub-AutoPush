@@ -1,6 +1,7 @@
 from GitHub_PushToken import PushingToken as PT
 import base64
 import requests
+import json
 
 # Headers for Authorization
 def get_headers(token): 
@@ -34,7 +35,7 @@ def get_last_commit(token):
    last_commit_sha = response.json()['commit']['sha']
    print(last_commit_sha)
 
-def create_commit()
+def create_commit():
    with open(FILE_PATH, 'rb') as file:
       content = file.read()
    encoded_content = base64.b64encode(content).decode('utf-8')
