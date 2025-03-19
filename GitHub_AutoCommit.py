@@ -44,7 +44,7 @@ class GitAutoCommit(FileSystemEventHandler):
    def _get_relative_path(self, abs_path):
       """Convert absolute path to repository-relative path"""
       try:
-         return os.path.relpath(abs_path, self.repo_root)
+         return os.path.relpath(abs_path)
       except ValueError:
          return None
          
