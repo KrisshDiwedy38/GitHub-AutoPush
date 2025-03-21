@@ -9,11 +9,12 @@ import base64
 import requests
 import json
 
+vs_code_worksplace = os.path.expanduser('~')
+
 class GitAutoCommit(FileSystemEventHandler):
    def __init__(self):
       self.modifications = {}
-      self.owner = "KrisshDiwedy38"
-      self.repo = "GitHub-AutoPush"
+      self.owner = "KrisshDiwedy38" # GitHub Username
       self.branch = "main"
       self.token = Token
       self.header = {
@@ -50,7 +51,7 @@ class GitAutoCommit(FileSystemEventHandler):
          
    def _should_ignore(self, path):
       """Check if a file should be ignored (like .git files)"""
-      ignore_patterns = ['.git/', '__pycache__/', '.pyc', '.pyo', '.swp', '.#']
+      ignore_patterns = ['.git/', '__pycache__/', '.pyc', '.pyo', '.swp', '.#', '.git\\']
       return any(pattern in path for pattern in ignore_patterns)
 
    def get_commit_msg(self):
@@ -61,12 +62,19 @@ class GitAutoCommit(FileSystemEventHandler):
         return commit_msg if commit_msg else "Auto commit"
 
    def commit_and_push(self):
+      root = tk.Tk()
+      root.withdraw()  # Hide the root window
+      repo_name = simpledialog.askstring("GitHub Repository", "Enter Repository Name :")
+      root.destroy()
+
       if not self.modifications:
          print("No Changes in directory")
          return
       
       print(f"Changes detected: {self.modifications}")
-         
+      
+      commit_message = self.get_commit_msg()
+      headers = self.header
       for i in self.modifications:
          # If a file was created or updated
          if self.modifications[i] in ["Created", "Modified"]:
@@ -75,8 +83,7 @@ class GitAutoCommit(FileSystemEventHandler):
             encoded_content = base64.b64encode(content).decode('utf-8')
 
             # Get the SHA of the file (if it exists)
-            url = f'https://api.github.com/repos/{self.owner}/{self.repo}/contents/{i}'
-            headers = self.header
+            url = f'https://api.github.com/repos/{self.owner}/{repo_name}/contents/{i}'
             response = requests.get(url, headers=headers)
 
             if response.status_code == 200:
@@ -84,7 +91,6 @@ class GitAutoCommit(FileSystemEventHandler):
             else:
                sha = None
 
-            commit_message = self.get_commit_msg()
             commit_package = {
                'message': commit_message,
                'content': encoded_content,
@@ -104,6 +110,7 @@ class GitAutoCommit(FileSystemEventHandler):
             
          # If file is Deleted 
          else:
+            url = f'https://api.github.com/repos/{self.owner}/{repo_name}/contents/{i}'
             response = requests.get(url,headers=headers)
             if response.status_code == 200:
                file_sha = response.json()['sha']
@@ -112,7 +119,6 @@ class GitAutoCommit(FileSystemEventHandler):
                print(response.json())
                exit()
             
-            commit_message = self.get_commit_msg()
             payload = {
                'message': commit_message,
                'sha': file_sha
@@ -126,8 +132,7 @@ class GitAutoCommit(FileSystemEventHandler):
                print(f"Error deleting file: {response.status_code}")
                print(response.json())
 
-
-def main(): 
+def Auto_commit_runner(): 
    dir_to_watch = "."
    # Setting up an observer
    observer = Observer()
@@ -148,5 +153,6 @@ def main():
    # Shuts down observer
    observer.join()
 
+
 if __name__ == "__main__":
-   main()
+   Auto_commit_runner()
